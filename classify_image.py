@@ -51,6 +51,7 @@ image = image[:, :, [2, 1, 0]]
 permuted = image
 
 # preprocess
+image = torch.from_numpy(image)
 input_tensor = preprocess(image)
 
 # create a mini-batch as expected by the model
