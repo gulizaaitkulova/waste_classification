@@ -1,4 +1,5 @@
 import time
+import json
 
 import torch
 import numpy as np
@@ -6,6 +7,15 @@ from torchvision import models, transforms
 
 import cv2
 from PIL import Image
+
+
+# Specify the path to Imagenet labels
+json_file_path = 'classes.json'
+
+# Open the JSON file and load its content into a Python dictionary
+with open(json_file_path, 'r') as file:
+    classes = json.load(file)
+
 
 torch.backends.quantized.engine = 'qnnpack'
 
