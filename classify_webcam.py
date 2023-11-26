@@ -1,14 +1,11 @@
 import time
-import json
 
 import torch
-import numpy as np
 from torchvision import models, transforms
 
 import cv2
-from PIL import Image
 
-
+# recyclable and compost labels
 RECYCLE = [440, 441,504, 509, 510, 511, 521, 523, 529, 531, 540, 548, 549, 553, 563, 572, 574, 575, 580, 582, 592, 598, 
            599, 605, 620, 622, 634, 635, 646, 649, 651, 688, 696, 703, 704, 705, 706, 707, 709, 710, 711, 712, 713, 719, 720, 
            721, 726, 728, 734, 739, 740, 742, 743, 745, 746, 756, 760, 761, 768, 772, 773, 777, 782, 783, 784, 785, 786, 
@@ -18,26 +15,21 @@ RECYCLE = [440, 441,504, 509, 510, 511, 521, 523, 529, 531, 540, 548, 549, 553, 
 COMPOST = [924, 925, 944, 945, 946, 947, 948, 949, 950, 951, 952, 953, 954, 955, 956, 957, 958, 959, 960, 961, 962, 963,
            964, 965, 966, 967, 969, 984, 985, 986, 987, 988, 989, 990, 991, 992, 993, 994, 995, 996, 997, 998]
 
-# Specify the path to Imagenet labels
-json_file_path = 'classes.json'
-
-# Open the JSON file and load its content into a Python dictionary
-with open(json_file_path, 'r') as file:
-    classes = json.load(file)
-
-
 torch.backends.quantized.engine = 'qnnpack'
 
+# configure webcam parameters
 cap = cv2.VideoCapture(0, cv2.CAP_V4L2)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 224)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 224)
 cap.set(cv2.CAP_PROP_FPS, 36)
 
+# image preprocessing
 preprocess = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
 
+# download the model
 net = models.quantization.mobilenet_v2(pretrained=True, quantize=True)
 # jit model to take it from ~20fps to ~30fps
 net = torch.jit.script(net)
@@ -65,7 +57,6 @@ with torch.no_grad():
 
         # run model
         output = net(input_batch)
-        # do something with output ...
 
         # log model performance
         frame_count += 1
