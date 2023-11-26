@@ -29,9 +29,9 @@ with open(json_file_path, 'r') as file:
 torch.backends.quantized.engine = 'qnnpack'
 
 preprocess = transforms.Compose([
+    transforms.ToTensor(),
     transforms.Resize(256),
     transforms.CenterCrop(224),
-    transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
 
@@ -51,7 +51,6 @@ image = image[:, :, [2, 1, 0]]
 permuted = image
 
 # preprocess
-image = torch.from_numpy(image)
 input_tensor = preprocess(image)
 
 # create a mini-batch as expected by the model
